@@ -14,9 +14,27 @@ coreos_sync_system_files:           []
   #   owner:  root
   #   group:  root
 
+# initialize extra system conf.
+coreos_sync_extra_system_files:           []
+# coreos_sync_extra_system_files:
+  # - src:    files/sshd/sshd_config
+  #   dest:   /etc/ssh/sshd_config
+  #   mode:   '644'
+  #   owner:  root
+  #   group:  root
+
 # initialize core user conf.
 coreos_sync_coreuser_files:         []
 # coreos_sync_coreuser_files:
+  # - src:    files/home/.bashrc
+  #   dest:   /home/core/.bashrc
+  #   mode:   '644'
+  #   owner:  core
+  #   group:  core
+
+# initialize extra core user conf.
+coreos_sync_extra_coreuser_files:         []
+# coreos_sync_extra_coreuser_files:
   # - src:    files/home/.bashrc
   #   dest:   /home/core/.bashrc
   #   mode:   '644'

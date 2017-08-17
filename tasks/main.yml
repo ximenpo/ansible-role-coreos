@@ -65,6 +65,20 @@
         mode:   '{{ item.dest|default("644") }}'
         owner:  '{{ item.owner|default("root") }}'
         group:  '{{ item.group|default("root") }}'
+    - name: sync extra system files
+      when:
+        -   (coreos_sync_extra_system_files != None)
+        -   (coreos_sync_extra_system_files != '')
+        -   (coreos_sync_extra_system_files != [])
+      with_items: '{{ coreos_sync_extra_system_files }}'
+      include_role: 
+        name: ximenpo.coreos-copy
+      vars:
+        src:    '{{ item.src }}'
+        dest:   '{{ item.dest }}'
+        mode:   '{{ item.dest|default("644") }}'
+        owner:  '{{ item.owner|default("root") }}'
+        group:  '{{ item.group|default("root") }}'
 
 #
 # CoreOS user(core) env.
@@ -77,6 +91,20 @@
         -   (coreos_sync_coreuser_files != '')
         -   (coreos_sync_coreuser_files != [])
       with_items: '{{coreos_sync_coreuser_files}}'
+      include_role: 
+          name:   ximenpo.coreos-copy
+      vars:
+        src:    '{{ item.src }}'
+        dest:   '{{ item.dest }}'
+        mode:   '{{ item.dest|default("644") }}'
+        owner:  '{{ item.owner|default("core") }}'
+        group:  '{{ item.group|default("core") }}'
+    - name: sync extra core user files
+      when:
+        -   (coreos_sync_extra_coreuser_files != None)
+        -   (coreos_sync_extra_coreuser_files != '')
+        -   (coreos_sync_extra_coreuser_files != [])
+      with_items: '{{coreos_sync_extra_coreuser_files}}'
       include_role: 
           name:   ximenpo.coreos-copy
       vars:
