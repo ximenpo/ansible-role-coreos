@@ -5,6 +5,15 @@
 coreos_sshd_config_with_rootlogin:  ~
 coreos_authorized_keys:             ~
 
+# initialize basic system conf.
+coreos_sync_basic_system_files:           []
+# coreos_sync_basic_system_files:
+  # - src:    files/sshd/sshd_config
+  #   dest:   /etc/ssh/sshd_config
+  #   mode:   '644'
+  #   owner:  root
+  #   group:  root
+
 # initialize system conf.
 coreos_sync_system_files:           []
 # coreos_sync_system_files:

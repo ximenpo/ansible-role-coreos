@@ -47,6 +47,20 @@
   become: true
   become_method: sudo
   block:
+    - name: sync basic system files
+      when:
+        -   (coreos_sync_basic_system_files != None)
+        -   (coreos_sync_basic_system_files != '')
+        -   (coreos_sync_basic_system_files != [])
+      with_items: '{{ coreos_sync_basic_system_files }}'
+      include_role: 
+        name: ximenpo.coreos-copy
+      vars:
+        src:    '{{ item.src }}'
+        dest:   '{{ item.dest }}'
+        mode:   '{{ item.dest|default("644") }}'
+        owner:  '{{ item.owner|default("root") }}'
+        group:  '{{ item.group|default("root") }}'
     - name: install pypy env
       when: (coreos_install_pypy)
       include_role:
