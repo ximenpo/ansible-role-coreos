@@ -1,0 +1,99 @@
+---
+# tasks file for coreos
+
+#
+# basic login env.
+#
+- name: check if we can connect ...
+  wait_for_connection:
+    timeout:  5
+  register:   server_connection_info
+  ignore_errors: yes
+
+- name: install basic login config
+  when: (server_connection_info|failed)
+  block:
+    - name: install basic sshd_config (for root user login)
+      when:
+        -   (coreos_sshd_config_with_rootlogin != None)
+        -   (coreos_sshd_config_with_rootlogin != '')
+      include_role:
+        name:   ximenpo.coreos-copy
+      vars:
+        ansible_user:  root
+        src:    '{{ coreos_sshd_config_with_rootlogin }}'
+        dest:   /etc/ssh/sshd_config
+        owner:  root:root
+        mode:   '644'
+    - meta:  reset_connection
+    - meta:  clear_host_errors
+    - name: install login     ssh keys
+      when:
+        -   (coreos_authorized_keys != None)
+        -   (coreos_authorized_keys != '')
+      include_role:
+        name:   ximenpo.coreos-copy
+      vars:
+        ansible_user:  root
+        src:    '{{ coreos_authorized_keys }}'
+        dest:   /home/core/.ssh/authorized_keys
+        owner:  core:core
+        mode:   '644'
+
+#
+# CoreOS system env.
+#
+- name: CoreOS system env.
+  become: true
+  become_method: sudo
+  block:
+    - name: install pypy env
+      when: (coreos_install_pypy)
+      include_role:
+        name: ximenpo.coreos-pypy
+    - name: sync system files
+      when:
+        -   (coreos_sync_system_files != None)
+        -   (coreos_sync_system_files != '')
+        -   (coreos_sync_system_files != [])
+      with_items: '{{ coreos_sync_system_files }}'
+      include_role: 
+        name: ximenpo.coreos-copy
+      vars:
+        src:    '{{ item.src }}'
+        dest:   '{{ item.dest }}'
+        mode:   '{{ item.dest|default("644") }}'
+        owner:  '{{ item.owner|default("root") }}'
+        group:  '{{ item.group|default("root") }}'
+
+#
+# CoreOS user(core) env.
+#
+- name: sync CoreOS user(core) files.
+  block:
+    - name: sync core user files
+      when:
+        -   (coreos_sync_coreuser_files != None)
+        -   (coreos_sync_coreuser_files != '')
+        -   (coreos_sync_coreuser_files != [])
+      with_items: '{{coreos_sync_coreuser_files}}'
+      include_role: 
+          name:   ximenpo.coreos-copy
+      vars:
+        src:    '{{ item.src }}'
+        dest:   '{{ item.dest }}'
+        mode:   '{{ item.dest|default("644") }}'
+        owner:  '{{ item.owner|default("core") }}'
+        group:  '{{ item.group|default("core") }}'
+    - name: install .toolboxrc
+      when: (coreos_install_toolboxrc)
+      include_role: 
+        name:   ximenpo.coreos-toolboxrc
+
+#
+# CoreOS system initialize(cloudinit).
+#
+- name: CoreOS cloudinit.
+  when: (coreos_install_cloudinit)
+  include_role: 
+    name: ximenpo.coreos-cloudinit

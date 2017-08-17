@@ -1,2 +1,4 @@
-# ansible-role-coreos
-coreos env initialize.
+Role Name
+=========
+
+Role for coreos initialization.
