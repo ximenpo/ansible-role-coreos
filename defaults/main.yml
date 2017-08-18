@@ -64,7 +64,7 @@ coreos_docker_images:               []  # {name: centos7, tag: latest}
 
 # extra system operations
 coreos_task_files:                  []
-coreos_sudo_task_files:             []
+coreos_system_task_files:           []
 
 coreos_extra_task_files:            []
-coreos_extra_sudo_task_files:       []
+coreos_extra_system_task_files:     []

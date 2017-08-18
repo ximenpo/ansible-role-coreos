@@ -178,16 +178,19 @@
         name:         '{{ item.name }}'
         tag:          '{{ item.tag|default("latest") }}'
 
-- name: install include task files
+#
+# execute some task files
+#
+- name: execute task files
   block:
     - name: sudo task files
       become: true
       become_method: sudo
       when:
-        -   (coreos_sudo_task_files != None)
-        -   (coreos_sudo_task_files != '')
-        -   (coreos_sudo_task_files != [])
-      with_items: '{{coreos_sudo_task_files}}'
+        -   (coreos_system_task_files != None)
+        -   (coreos_system_task_files != '')
+        -   (coreos_system_task_files != [])
+      with_items: '{{coreos_system_task_files}}'
       include:  '{{ item }}'
     - name: another task files
       when:
@@ -197,16 +200,27 @@
       with_items: '{{coreos_task_files}}'
       include:  '{{ item }}'
 
-- name: install extra task files
+#
+# CoreOS system initialize(cloudinit).
+#
+- name: CoreOS cloudinit.
+  when: (coreos_install_cloudinit)
+  include_role: 
+    name: ximenpo.coreos-cloudinit
+
+#
+# execute extra task files
+#
+- name: execute extra task files
   block:
     - name: sudo task files
       become: true
       become_method: sudo
       when:
-        -   (coreos_extra_sudo_task_files != None)
-        -   (coreos_extra_sudo_task_files != '')
-        -   (coreos_extra_sudo_task_files != [])
-      with_items: '{{coreos_extra_sudo_task_files}}'
+        -   (coreos_extra_system_task_files != None)
+        -   (coreos_extra_system_task_files != '')
+        -   (coreos_extra_system_task_files != [])
+      with_items: '{{coreos_extra_system_task_files}}'
       include:  '{{ item }}'
     - name: another task files
       when:
@@ -215,11 +229,3 @@
         -   (coreos_extra_task_files != [])
       with_items: '{{coreos_extra_task_files}}'
       include:  '{{ item }}'
-
-#
-# CoreOS system initialize(cloudinit).
-#
-- name: CoreOS cloudinit.
-  when: (coreos_install_cloudinit)
-  include_role: 
-    name: ximenpo.coreos-cloudinit
