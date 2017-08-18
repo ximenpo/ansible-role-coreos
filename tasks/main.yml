@@ -49,10 +49,10 @@
   block:
     - name: sync basic system files
       when:
-        -   (coreos_sync_basic_system_files != None)
-        -   (coreos_sync_basic_system_files != '')
-        -   (coreos_sync_basic_system_files != [])
-      with_items: '{{ coreos_sync_basic_system_files }}'
+        -   (coreos_basic_system_files != None)
+        -   (coreos_basic_system_files != '')
+        -   (coreos_basic_system_files != [])
+      with_items: '{{ coreos_basic_system_files }}'
       include_role: 
         name: ximenpo.coreos-copy
       vars:
@@ -67,10 +67,10 @@
         name: ximenpo.coreos-pypy
     - name: sync system files
       when:
-        -   (coreos_sync_system_files != None)
-        -   (coreos_sync_system_files != '')
-        -   (coreos_sync_system_files != [])
-      with_items: '{{ coreos_sync_system_files }}'
+        -   (coreos_system_files != None)
+        -   (coreos_system_files != '')
+        -   (coreos_system_files != [])
+      with_items: '{{ coreos_system_files }}'
       include_role: 
         name: ximenpo.coreos-copy
       vars:
@@ -81,10 +81,10 @@
         group:  '{{ item.group|default("root") }}'
     - name: sync extra system files
       when:
-        -   (coreos_sync_extra_system_files != None)
-        -   (coreos_sync_extra_system_files != '')
-        -   (coreos_sync_extra_system_files != [])
-      with_items: '{{ coreos_sync_extra_system_files }}'
+        -   (coreos_extra_system_files != None)
+        -   (coreos_extra_system_files != '')
+        -   (coreos_extra_system_files != [])
+      with_items: '{{ coreos_extra_system_files }}'
       include_role: 
         name: ximenpo.coreos-copy
       vars:
@@ -101,10 +101,10 @@
   block:
     - name: sync core user files
       when:
-        -   (coreos_sync_coreuser_files != None)
-        -   (coreos_sync_coreuser_files != '')
-        -   (coreos_sync_coreuser_files != [])
-      with_items: '{{coreos_sync_coreuser_files}}'
+        -   (coreos_coreuser_files != None)
+        -   (coreos_coreuser_files != '')
+        -   (coreos_coreuser_files != [])
+      with_items: '{{coreos_coreuser_files}}'
       include_role: 
           name:   ximenpo.coreos-copy
       vars:
@@ -115,10 +115,10 @@
         group:  '{{ item.group|default("core") }}'
     - name: sync extra core user files
       when:
-        -   (coreos_sync_extra_coreuser_files != None)
-        -   (coreos_sync_extra_coreuser_files != '')
-        -   (coreos_sync_extra_coreuser_files != [])
-      with_items: '{{coreos_sync_extra_coreuser_files}}'
+        -   (coreos_extra_coreuser_files != None)
+        -   (coreos_extra_coreuser_files != '')
+        -   (coreos_extra_coreuser_files != [])
+      with_items: '{{coreos_extra_coreuser_files}}'
       include_role: 
           name:   ximenpo.coreos-copy
       vars:
@@ -131,6 +131,90 @@
       when: (coreos_install_toolboxrc)
       include_role: 
         name:   ximenpo.coreos-toolboxrc
+
+#
+# install system components
+#
+- name: install pip components
+  become: true
+  become_method: sudo
+  block:
+    - name: preset pip packages
+      when:
+        -   (coreos_pip_packages != None)
+        -   (coreos_pip_packages != '')
+        -   (coreos_pip_packages != [])
+      with_items: '{{coreos_pip_packages}}'
+      pip:
+        name:         '{{ item }}'
+        extra_args:   '{{ coreos_pip_extra_args|default("") }}'
+    - name: preset pip versioned packages
+      when:
+        -   (coreos_pip_versioned_packages != None)
+        -   (coreos_pip_versioned_packages != '')
+        -   (coreos_pip_versioned_packages != [])
+      with_items: '{{coreos_pip_versioned_packages}}'
+      pip:
+        name:         '{{ item.name }}'
+        version:      '{{ item.version }}'
+        extra_args:   '{{ coreos_pip_extra_args|default("") }}'
+    - name: preset pip requirments
+      when:
+        -   (coreos_pip_requirements != None)
+        -   (coreos_pip_requirements != '')
+      pip:
+        requirements: '{{ icoreos_pip_requirements }}'
+        extra_args:   '{{ coreos_pip_extra_args|default("") }}'
+
+- name: install docker images
+  block:
+    - name: preset docker images
+      when:
+        -   (coreos_docker_images != None)
+        -   (coreos_docker_images != '')
+        -   (coreos_docker_images != [])
+      with_items: '{{coreos_docker_images}}'
+      docker_image:
+        name:         '{{ item.name }}'
+        tag:          '{{ item.tag|default("latest") }}'
+
+- name: install include task files
+  block:
+    - name: sudo task files
+      become: true
+      become_method: sudo
+      when:
+        -   (coreos_sudo_task_files != None)
+        -   (coreos_sudo_task_files != '')
+        -   (coreos_sudo_task_files != [])
+      with_items: '{{coreos_sudo_task_files}}'
+      include:  '{{ item }}'
+    - name: another task files
+      when:
+        -   (coreos_task_files != None)
+        -   (coreos_task_files != '')
+        -   (coreos_task_files != [])
+      with_items: '{{coreos_task_files}}'
+      include:  '{{ item }}'
+
+- name: install extra task files
+  block:
+    - name: sudo task files
+      become: true
+      become_method: sudo
+      when:
+        -   (coreos_extra_sudo_task_files != None)
+        -   (coreos_extra_sudo_task_files != '')
+        -   (coreos_extra_sudo_task_files != [])
+      with_items: '{{coreos_extra_sudo_task_files}}'
+      include:  '{{ item }}'
+    - name: another task files
+      when:
+        -   (coreos_extra_task_files != None)
+        -   (coreos_extra_task_files != '')
+        -   (coreos_extra_task_files != [])
+      with_items: '{{coreos_extra_task_files}}'
+      include:  '{{ item }}'
 
 #
 # CoreOS system initialize(cloudinit).

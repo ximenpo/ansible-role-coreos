@@ -6,8 +6,8 @@ coreos_sshd_config_with_rootlogin:  ~
 coreos_authorized_keys:             ~
 
 # initialize basic system conf.
-coreos_sync_basic_system_files:           []
-# coreos_sync_basic_system_files:
+coreos_basic_system_files:           []
+# coreos_basic_system_files:
   # - src:    files/sshd/sshd_config
   #   dest:   /etc/ssh/sshd_config
   #   mode:   '644'
@@ -15,8 +15,8 @@ coreos_sync_basic_system_files:           []
   #   group:  root
 
 # initialize system conf.
-coreos_sync_system_files:           []
-# coreos_sync_system_files:
+coreos_system_files:           []
+# coreos_system_files:
   # - src:    files/sshd/sshd_config
   #   dest:   /etc/ssh/sshd_config
   #   mode:   '644'
@@ -24,8 +24,8 @@ coreos_sync_system_files:           []
   #   group:  root
 
 # initialize extra system conf.
-coreos_sync_extra_system_files:           []
-# coreos_sync_extra_system_files:
+coreos_extra_system_files:           []
+# coreos_extra_system_files:
   # - src:    files/sshd/sshd_config
   #   dest:   /etc/ssh/sshd_config
   #   mode:   '644'
@@ -33,8 +33,8 @@ coreos_sync_extra_system_files:           []
   #   group:  root
 
 # initialize core user conf.
-coreos_sync_coreuser_files:         []
-# coreos_sync_coreuser_files:
+coreos_coreuser_files:         []
+# coreos_coreuser_files:
   # - src:    files/home/.bashrc
   #   dest:   /home/core/.bashrc
   #   mode:   '644'
@@ -42,14 +42,29 @@ coreos_sync_coreuser_files:         []
   #   group:  core
 
 # initialize extra core user conf.
-coreos_sync_extra_coreuser_files:         []
-# coreos_sync_extra_coreuser_files:
+coreos_extra_coreuser_files:         []
+# coreos_extra_coreuser_files:
   # - src:    files/home/.bashrc
   #   dest:   /home/core/.bashrc
   #   mode:   '644'
   #   owner:  core
   #   group:  core
 
+# extra system components
 coreos_install_pypy:                false
 coreos_install_toolboxrc:           false
 coreos_install_cloudinit:           false
+
+coreos_pip_packages:                []
+coreos_pip_versioned_packages:      []  # {name: docker-py, version: 1.10.0}
+coreos_pip_requirements:            ~
+coreos_pip_extra_args:              ''
+
+coreos_docker_images:               []  # {name: centos7, tag: latest}
+
+# extra system operations
+coreos_task_files:                  []
+coreos_sudo_task_files:             []
+
+coreos_extra_task_files:            []
+coreos_extra_sudo_task_files:       []
