@@ -1,5 +1,9 @@
 ---
-dependencies: []
+dependencies:
+  - ximenpo.coreos-copy
+  - ximenpo.coreos-pypy
+  - ximenpo.coreos-toolboxrc
+  - ximenpo.coreos-cloudinit
 
 galaxy_info:
   author: ximenpo@jiandan.ren
