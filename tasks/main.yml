@@ -5,12 +5,8 @@
 # basic login env.
 #
 - name: check if we can connect ...
-  # wait_for_connection:
-  #   timeout:  5
-  raw:      '/bin/hostname'
-  until:    (server_connection_info.rc == 0)
-  retries:  5
-  delay:    0
+  wait_for_connection:
+    timeout:  5
   register:   server_connection_info
   ignore_errors: yes
 
